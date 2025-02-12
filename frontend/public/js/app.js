@@ -77,7 +77,8 @@ async function approveToken() {
         tokenContract = new web3.eth.Contract(CONFIG.ERC20_ABI, tokenAddress);
         
         console.log(tokenContract);
-        const fee = await registrationContract.methods.registrationFee().call();
+        const registrationType = document.getElementById('registration-type').value;
+        const fee = await registrationContract.methods.registrationFeeType(registrationType).call();
         
         // Approve the token contract to spend the fee
         await tokenContract.methods.approve(CONFIG.REGISTRATION_CONTRACT_ADDRESS, fee).send({
@@ -119,7 +120,7 @@ async function handleRegistration(event) {
         updateUI('info', 'Registering...');
         
         // TODO: Register the current user
-        await registrationContract.methods.register().send({
+        await registrationContract.methods.register(formData.registrationType).send({
             from: userAccount
         });
         
