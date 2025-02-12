@@ -3,6 +3,11 @@ pragma solidity 0.8.28;
 
 import "./IERC20.sol";
 
+/**
+ * @title Registration
+ * @author Elvis K (github.com/loctet)
+ * @dev Contract for managing registration for events
+ */
 contract Registration {
     IERC20 private _token;
     address private _organizer;
@@ -14,6 +19,7 @@ contract Registration {
 
     mapping(address => bool) private _registered;
 
+    // Events
     event ParticipantRegistered(address indexed participant, uint256 indexed typeRegistration, uint256 indexed registrationStage, uint256 fee, uint256  timestamp);
     event RegistrationFeeUpdated(uint256 indexed newFee, uint256 indexed typeRegistration, uint256 indexed registrationStage);
 
@@ -23,7 +29,12 @@ contract Registration {
         _;
     }
 
-    // Initialize the contract with the ERC20 token contract address and the registration fee
+    /**
+     * @dev Initialize the contract with the ERC20 token contract address and the registration fee
+     * @param token The ERC20 token contract address
+     * @param registrationStages An array of registration stages
+     * @param registrationFee An array of registration fees for each stage and type
+     */
     constructor(IERC20 token, uint256[] memory registrationStages,  uint256[][] memory registrationFee) {
         _token = token;
         _organizer = msg.sender;
@@ -51,12 +62,9 @@ contract Registration {
     }
 
     /**
-     * @dev Returns the current registration fee set by the organizer
+     * @dev Returns the current registration fee set by the organizer 
+     * @return _registrationFee[registrationStage()][0]
      */
-    function registrationFee() public view virtual returns (uint256) {
-        return _registrationFee[registrationStage()][0];
-    }
-
     function registrationStage() public view returns (uint256) {
         uint256 currentStage = _numberOfStages;
         for(uint256 i; i < _numberOfStages; i++) {
@@ -68,6 +76,12 @@ contract Registration {
         return currentStage;
     }
 
+
+    /**
+     * @dev Returns the registration fee for a specific registration type
+     * @param typeRegistration The type of registration (e.g., student, professional, participant)
+     * @return The registration fee for the specified type
+     */
     function registrationFeeType(uint256 typeRegistration) public view returns (uint256) {
         uint256 currentStage = registrationStage();
         return _registrationFee[currentStage][typeRegistration];
